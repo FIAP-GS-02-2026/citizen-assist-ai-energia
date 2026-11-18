@@ -62,6 +62,21 @@ class TestFormulas(unittest.TestCase):
         self.assertEqual(e.payback_anos(100, 0), float("inf"))
         self.assertAlmostEqual(e.payback_anos(100, 25), 4)
 
+    def test_payback_escalonado_fio_b(self):
+        # Conta feita à mão: 14,675 kWh/ano, tarifa 0,78938, TUSD 0,47242.
+        # Economia: 7,424 (60%), 6,385 (75%), 5,345 (90%) e 4,651 por ano depois (100%).
+        anos = e.payback_escalonado_anos(28.18, 14.675, 0.78938, 0.47242, [0.60, 0.75, 0.90, 1.00])
+        self.assertAlmostEqual(anos, 4.94, places=2)
+
+    def test_payback_escalonado_constante_igual_ao_simples(self):
+        anos = e.payback_escalonado_anos(28.18, 14.675, 0.78938, 0.47242, [0.60])
+        simples = e.payback_anos(28.18, 14.675 * (0.78938 - 0.60 * 0.47242))
+        self.assertAlmostEqual(anos, simples)
+
+    def test_escala_fio_b_da_lei(self):
+        p = e.carregar_premissas()
+        self.assertEqual([p["fio_b_2026"], p["fio_b_2027"], p["fio_b_2028"]], [0.60, 0.75, 0.90])
+
     def test_emissao(self):
         # 1 kWh com 0,0461 tCO2/MWh = 0,0461 kg
         self.assertAlmostEqual(e.emissao_kg(1, 0.0461), 0.0461)

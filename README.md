@@ -22,19 +22,19 @@ O assistente fica no repositório [citizen-assist-ai](https://github.com/FIAP-GS
 
 ## Funcionalidades de energia no assistente
 
-A categoria "Energia e mobilidade elétrica" do assistente tem 7 orientações. Todas mostram a fonte, a data de verificação e o aviso de que o assistente não é canal oficial.
+A categoria "Energia e mobilidade elétrica" do assistente tem 7 orientações. Todas mostram a fonte, a data de verificação e o aviso de que o assistente não é canal oficial. As orientações 18, 20 e 23 trazem os números desta análise; a 24 vem da recomendação 5; a 19 explica a bandeira usada na tabela de carga; a 21 e a 22 não entram nos cálculos, mas complementam o atendimento ao mesmo público (regras de placa, CNH e velocidade).
 
 | id | Orientação | Base |
 | --- | --- | --- |
-| 18 | Quanto custa carregar bike ou patinete elétrico na tomada | Tarifa B1 da Enel SP |
+| 18 | Quanto custa carregar bike ou patinete elétrico na tomada | Tarifa B1 da Enel SP + valor por carga desta análise |
 | 19 | Bandeira tarifária: quando o kWh fica mais caro | ANEEL |
-| 20 | Energia solar em casa: créditos na conta de luz | Lei 14.300/2022 |
+| 20 | Energia solar em casa: créditos na conta de luz e cobrança do Fio B | Lei 14.300/2022 |
 | 21 | Bicicleta elétrica e patinete: precisa de placa ou CNH? | Resolução Contran 996/2023 |
 | 22 | Velocidade de bike elétrica e patinete na ciclovia e na calçada | Prefeitura de São Paulo |
 | 23 | Tomada ou energia solar: o que compensa para carregar bike e patinete | **resultado desta análise** |
 | 24 | Onde descartar a bateria da bike ou do patinete elétrico | Lei 12.305/2010 |
 
-As orientações 23 e 24 estão em [`integracao/orientacoes_novas.json`](integracao/orientacoes_novas.json), no formato da base do assistente.
+As orientações 23 e 24 estão em [`integracao/orientacoes_novas.json`](integracao/orientacoes_novas.json), idênticas às que estão na base do assistente.
 
 **Exemplo no assistente:**
 
@@ -42,11 +42,14 @@ As orientações 23 e 24 estão em [`integracao/orientacoes_novas.json`](integra
 Digite sua dúvida (0 para voltar): vale a pena carregar a bike com energia solar ou na tomada?
 Confiança da resposta: ALTA (11 pontos)
 >> Tomada ou energia solar: o que compensa para carregar bike e patinete [Energia e mobilidade elétrica]
-Pela análise da equipe, uma carga completa custa cerca de R$ 0,59 na bike elétrica (bateria de 630 Wh)
-e R$ 0,21 no patinete (221 Wh), na tarifa residencial da Enel sem impostos. Rodando 6 km por dia, dá
-perto de R$ 12 por ano; a Tarifa Branca economiza menos de R$ 2 por ano e vale para a casa toda.
-Energia solar só compensa como parte de um sistema da casa: a parte da bike custa uns R$ 28 e se paga
-em 2 a 5 anos. São estimativas, não valores garantidos: dependem dos impostos, da bandeira do mês e do seu uso.
+Pela análise da equipe, rodando 6 km por dia, carregar na tomada custa perto de R$ 12 por ano na bike e
+R$ 13 no patinete (uma carga completa: R$ 0,59 e R$ 0,21) e emite cerca de 0,7 kg de CO2 por ano, pelo
+fator da rede de 2025 do MCTI. A Tarifa Branca economiza menos de R$ 2 por ano e vale para a casa toda.
+A energia solar não emite na operação, mas só compensa como parte de um sistema da casa: a parte da bike
+custa uns R$ 28 e se paga em 2,4 a 5 anos (até 7 nos cenários mais caros), porque a cobrança do Fio B
+sobe até 2028 (Lei 14.300). Referências: tarifa da Enel, irradiação do SunData/CEPEL, emissões do MCTI e
+Lei 14.300; o preço do painel é dado de mercado. São estimativas, não valores garantidos: dependem dos
+impostos, da bandeira do mês e do seu uso.
 ```
 
 ## Como executar
@@ -54,11 +57,11 @@ em 2 a 5 anos. São estimativas, não valores garantidos: dependem dos impostos,
 Requer Python 3.9 ou superior e não usa bibliotecas externas.
 
 ```bash
-python analise.py          # imprime a comparação e grava os CSVs em resultados/
-python -m unittest -v      # 21 testes dos cálculos e dos dados
+python3 analise.py          # imprime a comparação e grava os CSVs em resultados/
+python3 -m unittest -v      # 24 testes dos cálculos e dos dados
 ```
 
-Para ver as orientações funcionando, rode o assistente no outro repositório (`python main.py`), escolha "2. Navegar por categorias" e depois "Energia e mobilidade elétrica", ou faça uma das perguntas do exemplo acima.
+Para ver as orientações funcionando, rode o assistente no outro repositório (`python3 main.py`), escolha "2. Navegar por categorias" e depois "Energia e mobilidade elétrica", ou faça uma das perguntas do exemplo acima.
 
 ## Estrutura
 
@@ -116,9 +119,9 @@ Cada linha de [`dados/premissas.csv`](dados/premissas.csv) diz de onde veio o n�
 3. **Energia por ano:** Wh/km × km por dia × dias ÷ eficiência. Bike: 7,875 × 6 × 264 ÷ 0,85 = 14,7 kWh por ano.
 4. **Custo:** kWh × (tarifa + acréscimo da bandeira).
 5. **Potência solar necessária**, pela equação 6.28 do Manual CEPEL/CRESESB: P (Wp) = (E ÷ TD) ÷ HSP, com E em Wh/dia na média do ano. Bike: (40,2 Wh/dia ÷ 0,75) ÷ 4,66 h = 11,5 Wp.
-6. **Valor de cada kWh solar compensado** num sistema novo em 2026: a Lei 14.300 manda cobrar 60% do Fio B sobre a energia compensada. A tabela da Enel não separa o Fio B, por isso a conta sai como faixa: no pior caso, o Fio B é a TUSD inteira e cada kWh compensado vale 0,789 − 0,6 × 0,472 = R$ 0,506; no melhor caso, vale a tarifa inteira.
+6. **Valor de cada kWh solar compensado** num sistema novo: o art. 27 da Lei 14.300 manda cobrar sobre a energia compensada 60% do Fio B a partir de 2026, 75% a partir de 2027 e 90% a partir de 2028; de 2029 em diante vale a regra do art. 17, que a ANEEL ainda vai calcular. A tabela da Enel não separa o Fio B, por isso a conta sai como faixa. No pior caso, o Fio B é a TUSD inteira e o percentual sobe ano a ano: o kWh compensado vale R$ 0,506 em 2026, R$ 0,435 em 2027, R$ 0,364 em 2028 e R$ 0,317 de 2029 em diante (premissa da equipe: 100% da TUSD). No melhor caso, vale a tarifa inteira.
 7. **Emissão:** kWh tirados da rede × fator de emissão do SIN. Na operação, a energia solar não emite.
-8. **Retorno simples:** investimento ÷ economia por ano, sem juros nem reajuste.
+8. **Retorno:** no melhor caso, investimento ÷ economia por ano. No pior caso, a economia de cada ano muda com o percentual do Fio B, e o retorno é o ano em que a economia acumulada paga o investimento. Sem juros nem reajuste.
 
 ## Resultados
 
@@ -135,14 +138,14 @@ Cada linha de [`dados/premissas.csv`](dados/premissas.csv) diz de onde veio o n�
 | --- | --- | --- | --- | --- | --- |
 | A) Tomada, tarifa convencional | R$ 11,58 | nenhum | não se aplica | 0,68 kg | Imediata, em qualquer tomada |
 | B) Tomada, Tarifa Branca fora de ponta | R$ 9,82 | nenhum | não se aplica | 0,68 kg | Vale para a casa inteira; a ponta custa R$ 1,48/kWh |
-| C) Solar em casa, sistema novo em 2026 | R$ 0,00 a R$ 4,16 | R$ 28 (11,5 Wp) | 2,4 a 3,8 anos | 0 na operação | Só como parte de um sistema da casa |
+| C) Solar em casa, sistema novo em 2026 | R$ 0,00 a R$ 4,16 em 2026 (até R$ 6,93 a partir de 2029) | R$ 28 (11,5 Wp) | 2,4 a 4,9 anos | 0 na operação | Só como parte de um sistema da casa |
 
 No patinete os números são parecidos: R$ 13,00 por ano na tomada, R$ 11,02 na Tarifa Branca e R$ 32 de parcela solar, com o mesmo retorno.
 
 **Sensibilidade** ([`resultados/sensibilidade.csv`](resultados/sensibilidade.csv) e [`resultados/sensibilidade_solar.csv`](resultados/sensibilidade_solar.csv)):
 
 - Com 2 a 20 km por dia e eficiência de 75% a 95%, a bike custa de R$ 3,45 a R$ 43,76 por ano na tomada. Mesmo se impostos e outros itens dobrassem a conta, o maior valor ficaria abaixo de R$ 90 por ano.
-- Com preço de R$ 2,08 a R$ 3,06 por Wp e taxa de desempenho de 70% a 80%, a parcela solar se paga em 3,0 a 5,1 anos no pior caso do Fio B.
+- Com preço de R$ 2,08 a R$ 3,06 por Wp e taxa de desempenho de 70% a 80%, a parcela solar se paga em 3,7 a 7,0 anos no pior caso do Fio B.
 - Mês a mês ([`resultados/solar_mensal.csv`](resultados/solar_mensal.csv)), a parcela solar gera menos que o consumo de abril a julho e em setembro (o mês mais fraco é junho, com 1,05 kWh para 1,22 kWh de consumo). A sobra dos outros meses vira crédito, que vale por 60 meses.
 
 ## Recomendações e justificativas
@@ -150,17 +153,17 @@ No patinete os números são parecidos: R$ 13,00 por ano na tomada, R$ 11,02 na 
 1. **Carregar na tomada de casa é barato e não precisa de mudança.** Custo: menos de R$ 1 por carga e perto de R$ 12 por ano. Viabilidade: total, sem investimento. Impacto: 0,68 kg de CO2 por ano, porque a rede brasileira emitiu em média 46 g de CO2 por kWh em 2025. É a recomendação para a maioria do público.
 2. **A bandeira tarifária muda pouco o valor da carga.** Na vermelha 2, a carga da bike sobe de R$ 0,59 para R$ 0,64, e o ano passaria de R$ 11,58 para R$ 12,74 se a bandeira ficasse vermelha 2 o ano todo. Não vale mudar a rotina por causa da bandeira.
 3. **Tarifa Branca não compensa só por causa da bike.** A economia é de R$ 1,76 por ano, e a adesão muda a conta da casa inteira: no horário de ponta o kWh custa R$ 1,48, quase o dobro da tarifa convencional. Só faz sentido para quem já concentra o consumo da casa fora da ponta. Fins de semana e feriados nacionais são sempre fora de ponta.
-4. **Energia solar compensa como parte de um sistema da casa, não só para a bike.** A parcela da bike é pequena (11,5 Wp, cerca de R$ 28) e se paga em 2 a 5 anos. Sozinha, porém, não existe: um sistema tem custos fixos de projeto, inversor, instalação e pedido de acesso à Enel que esta conta não inclui. Exige telhado ou área própria; quem mora em apartamento pode participar de geração compartilhada ou de condomínio, previstas na Lei 14.300. O ganho ambiental é real, mas pequeno nessa escala: 0,68 kg de CO2 por ano por bike.
+4. **Energia solar compensa como parte de um sistema da casa, não só para a bike.** A parcela da bike é pequena (11,5 Wp, cerca de R$ 28) e se paga em 2,4 a 4,9 anos (até 7 anos nos cenários mais caros), porque a cobrança do Fio B sobe até 2028. Sozinha, porém, não existe: um sistema tem custos fixos de projeto, inversor, instalação e pedido de acesso à Enel que esta conta não inclui. Exige telhado ou área própria; quem mora em apartamento pode participar de geração compartilhada ou de condomínio, previstas na Lei 14.300. O ganho ambiental é real, mas pequeno nessa escala: 0,68 kg de CO2 por ano por bike.
 5. **A bateria não vai para o lixo comum.** Pela Lei 12.305/2010, quem vende pilhas e baterias tem de recebê-las de volta, e o consumidor deve devolvê-las ao comerciante ou distribuidor. O Manual CEPEL/CRESESB também alerta: "As baterias de Li-íon podem explodir ou incendiar".
 
-**Coerência com o assistente:** a orientação 23 repete os números desta seção (R$ 0,59 e R$ 0,21 por carga, R$ 12 por ano, menos de R$ 2 de economia na Tarifa Branca, R$ 28 e 2 a 5 anos para a parcela solar), avisa que são estimativas e aponta para este repositório. A 24 vem da recomendação 5. As orientações 18 a 22 trazem os dados oficiais em que a análise se apoia.
+**Coerência com o assistente:** a orientação 23 repete os números desta seção (R$ 12 por ano na bike e R$ 13 no patinete, R$ 0,59 e R$ 0,21 por carga, 0,7 kg de CO2 por ano, menos de R$ 2 de economia na Tarifa Branca, R$ 28 e 2,4 a 5 anos para a parcela solar, até 7 nos cenários mais caros), cita as referências, avisa que são estimativas e aponta para este repositório. A 18 traz o valor por carga com a perda no carregador, e a 20 traz a escala do Fio B. A 24 vem da recomendação 5.
 
 ## Limitações
 
-- **Tarifas sem tributos.** A tabela da Enel não informa se inclui ICMS, PIS e COFINS. O valor real na conta é maior; a sensibilidade mostra que, mesmo dobrando, a conclusão não muda.
-- **Fio B desconhecido.** A Enel não publica o Fio B separado na tabela, então a alternativa solar sai como faixa entre pior e melhor caso.
+- **Tarifas sem tributos.** Usamos a tarifa homologada pela ANEEL, publicada pela Enel sem ICMS, PIS e COFINS. Não achamos fonte oficial com a alíquota efetiva para a conta residencial em São Paulo, então não estimamos o valor com tributos. A sensibilidade mostra que, mesmo dobrando a conta, a conclusão não muda.
+- **Fio B desconhecido.** A Enel não publica o Fio B separado na tabela, então a alternativa solar sai como faixa entre pior e melhor caso. A partir de 2029 a lei remete ao art. 17, ainda sem cálculo da ANEEL; no pior caso usamos 100% da TUSD.
 - **Preço solar de mercado.** O R$ 2,45/Wp é média nacional de um levantamento privado, não um preço oficial; São Paulo não está entre os 10 estados mais baratos. O cálculo é proporcional e não inclui custos fixos.
-- **Consumo de fabricante.** A autonomia da bike é a do nível 1 de assistência, em condições de teste do fabricante; subida, peso e níveis mais altos gastam mais. A sensibilidade de distância cobre parte disso.
+- **Consumo de fabricante.** A autonomia da bike é a do nível 1 de assistência e a do patinete é o alcance máximo informado, ambas em condições de teste do fabricante; subida, peso e velocidade maior gastam mais. A sensibilidade de distância cobre parte disso.
 - **Eficiência do carregador estimada.** Sem medição própria; usamos 85% e testamos de 75% a 95%.
 - **Emissão só da operação.** Não calculamos a emissão de fabricar painéis, baterias ou a bike.
 - **Horários da Tarifa Branca.** A página da Enel não informa os horários de ponta; a pessoa deve consultar a distribuidora.
@@ -168,7 +171,7 @@ No patinete os números são parecidos: R$ 13,00 por ano na tomada, R$ 11,02 na 
 
 ## Testes com usuários
 
-As situações testadas, os comentários e os ajustes ficam em [`docs/testes-com-usuarios.md`](docs/testes-com-usuarios.md). Antes do teste, a busca das orientações de energia foi medida com perguntas novas, e as falhas viraram palavras-chave (detalhes no mesmo arquivo).
+O teste foi feito em 18/11/2026, presencial, com 3 pessoas de fora da equipe usando o assistente. Duas perguntas de energia foram feitas e as duas foram encontradas e ajudaram. A partir delas, a orientação 18 passou a mostrar o valor por carga, e não só a tarifa. Situações, comentários, ajustes e limitações do teste em [`docs/testes-com-usuarios.md`](docs/testes-com-usuarios.md).
 
 ## Referências
 

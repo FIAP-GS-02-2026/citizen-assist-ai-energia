@@ -113,6 +113,27 @@ def valor_kwh_compensado(tarifa, tusd_r_kwh, percentual_fio_b, regra_antiga=Fals
     return tarifa - percentual_fio_b * tusd_r_kwh
 
 
+def payback_escalonado_anos(investimento, kwh_ano, tarifa, tusd_r_kwh, percentuais_fio_b):
+    """Retorno (anos) com o percentual do Fio B mudando ano a ano (art. 27 da Lei 14.300).
+
+    percentuais_fio_b: lista com o percentual de cada ano, a partir do ano 1; depois do
+    último, o último valor se repete. A economia de cada ano é kwh_ano x valor compensado.
+    Devolve o ano (com fração) em que a economia acumulada paga o investimento.
+    """
+    acumulado = 0.0
+    ano = 0
+    while ano < 100:
+        pct = percentuais_fio_b[min(ano, len(percentuais_fio_b) - 1)]
+        economia = kwh_ano * valor_kwh_compensado(tarifa, tusd_r_kwh, pct)
+        if economia <= 0:
+            return float("inf")
+        if acumulado + economia >= investimento:
+            return ano + (investimento - acumulado) / economia
+        acumulado += economia
+        ano += 1
+    return float("inf")
+
+
 def payback_anos(investimento, economia_anual):
     """Retorno simples do investimento, em anos (sem juros nem reajuste)."""
     if economia_anual <= 0:

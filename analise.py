@@ -29,7 +29,6 @@ def tarifas(p):
     return {
         "convencional": e.tarifa_r_kwh(p["tusd_b1"], p["te_b1"]),
         "branca_fora_ponta": e.tarifa_r_kwh(p["tusd_branca_fora_ponta"], p["te_branca_fora_ponta"]),
-        "branca_intermediario": e.tarifa_r_kwh(p["tusd_branca_intermediario"], p["te_branca_intermediario"]),
         "branca_ponta": e.tarifa_r_kwh(p["tusd_branca_ponta"], p["te_branca_ponta"]),
         "tusd_b1": p["tusd_b1"] / 1000,
     }
@@ -71,15 +70,25 @@ def comparar(p, km_por_dia=None, eficiencia=None):
         # O valor real do Fio B da Enel não está publicado na tabela de tarifas. Por isso a
         # alternativa C sai como faixa: pior caso (Fio B = TUSD inteira) e melhor caso
         # (Fio B desprezível, mesma conta da regra antiga do art. 26).
+        # Pior caso: o percentual do Fio B sobe ano a ano (art. 27): 60% em 2026, 75% em 2027,
+        # 90% em 2028 e, a partir de 2029, a regra do art. 17 (ainda a definir pela ANEEL),
+        # que tratamos como 100% da TUSD (premissa da equipe, o teto possível).
+        escala = [p["fio_b_2026"], p["fio_b_2027"], p["fio_b_2028"], p["fio_b_2029_em_diante"]]
         for regra_antiga, rotulo in ((False, "sistema novo em 2026, pior caso"),
                                      (True, "sistema novo em 2026, melhor caso")):
             valor = e.valor_kwh_compensado(t["convencional"], t["tusd_b1"], p["fio_b_2026"], regra_antiga)
             custo_residual = kwh_ano * (t["convencional"] - valor)
-            economia = custo_conv - custo_residual
+            if regra_antiga:
+                payback = e.payback_anos(investimento, custo_conv - custo_residual)
+                custo_2029 = custo_residual
+            else:
+                payback = e.payback_escalonado_anos(investimento, kwh_ano, t["convencional"], t["tusd_b1"], escala)
+                custo_2029 = kwh_ano * p["fio_b_2029_em_diante"] * t["tusd_b1"]
             linhas.append({
                 "veiculo": nome, "alternativa": f"C) Solar em casa ({rotulo})",
-                "kwh_ano": kwh_ano, "custo_ano_rs": custo_residual, "investimento_rs": investimento,
-                "payback_anos": e.payback_anos(investimento, economia), "co2_kg_ano": 0.0,
+                "kwh_ano": kwh_ano, "custo_ano_rs": custo_residual, "custo_ano_2029_em_diante_rs": custo_2029,
+                "investimento_rs": investimento,
+                "payback_anos": payback, "co2_kg_ano": 0.0,
                 "potencia_wp": wp,
                 "viabilidade": ("Só faz sentido como parte de um sistema solar da casa toda: exige telhado ou "
                                 "área própria (ou geração compartilhada), investimento e pedido de acesso à Enel. "
@@ -203,7 +212,9 @@ def main():
         for c in (c for c in comp if c["veiculo"] == veiculo):
             payback = f" | retorno em {num(c['payback_anos'])} anos" if c["payback_anos"] != "" else ""
             investimento = f" | investimento {brl(c['investimento_rs'])} ({num(c['potencia_wp'])} Wp)" if c["investimento_rs"] else ""
-            print(f"  {c['alternativa']}: {num(c['kwh_ano'])} kWh/ano | {brl(c['custo_ano_rs'])}/ano"
+            depois = (f" em 2026, {brl(c['custo_ano_2029_em_diante_rs'])}/ano a partir de 2029"
+                      if c.get("custo_ano_2029_em_diante_rs") not in (None, "", c["custo_ano_rs"]) else "")
+            print(f"  {c['alternativa']}: {num(c['kwh_ano'])} kWh/ano | {brl(c['custo_ano_rs'])}/ano{depois}"
                   f"{investimento}{payback} | {num(c['co2_kg_ano'], 2)} kg CO2/ano")
         print()
     print("Carga completa (0 a 100%), tarifa convencional:")
