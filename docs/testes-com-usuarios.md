@@ -14,10 +14,7 @@
 
 ## Comentários recebidos
 
-> **Glauco preencher:** o que P1 e P2 comentaram sobre as respostas de energia (ex.: se entenderam o valor em R$ por MWh, se a resposta foi longa). Escrever só o que foi dito; se ninguém comentou, escrever "sem comentários".
-
-- P1:
-- P2:
+Nenhum comentário espontâneo foi registrado sobre as respostas de energia: as duas pessoas responderam que a orientação ajudou ("sim") e seguiram para a próxima pergunta. Como não houve comentário, os ajustes abaixo partiram da observação da equipe sobre a resposta exibida, não de fala dos participantes.
 
 ## Ajustes realizados a partir do teste
 
