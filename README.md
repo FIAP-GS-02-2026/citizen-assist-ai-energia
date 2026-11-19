@@ -195,3 +195,5 @@ Trechos de cada fonte em [`docs/fontes.md`](docs/fontes.md).
 ## Vídeo técnico
 
 https://youtu.be/Z0Z8Y0PXGQ0 (YouTube, não listado)
+
+Correção: em 1:33 do vídeo, a emissão da bike carregada pela rede é 0,68 kg de CO2 por ano (0,76 kg no patinete), como na tabela de resultados, e não 0,77 kg.
