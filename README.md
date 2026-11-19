@@ -28,7 +28,7 @@ A categoria "Energia e mobilidade elétrica" do assistente tem 7 orientações. 
 | --- | --- | --- |
 | 18 | Quanto custa carregar bike ou patinete elétrico na tomada | Tarifa B1 da Enel SP + valor por carga desta análise |
 | 19 | Bandeira tarifária: quando o kWh fica mais caro | ANEEL |
-| 20 | Energia solar em casa: créditos na conta de luz e cobrança do Fio B | Lei 14.300/2022 |
+| 20 | Energia solar em casa: créditos na conta de luz | Lei 14.300/2022 |
 | 21 | Bicicleta elétrica e patinete: precisa de placa ou CNH? | Resolução Contran 996/2023 |
 | 22 | Velocidade de bike elétrica e patinete na ciclovia e na calçada | Prefeitura de São Paulo |
 | 23 | Tomada ou energia solar: o que compensa para carregar bike e patinete | **resultado desta análise** |
