@@ -194,4 +194,4 @@ Trechos de cada fonte em [`docs/fontes.md`](docs/fontes.md).
 
 ## Vídeo técnico
 
-*O link será adicionado após a gravação.*
+https://youtu.be/Z0Z8Y0PXGQ0 (YouTube, não listado)
