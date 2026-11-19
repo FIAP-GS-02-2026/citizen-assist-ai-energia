@@ -22,11 +22,32 @@ Nenhum comentário espontâneo foi registrado sobre as respostas de energia: as 
 | --- | --- | --- |
 | A resposta à pergunta de P1 ("quanto gasta de luz pra carregar patinete") trazia só a tarifa em R$ por MWh: a pessoa ainda teria de fazer a conta para saber quanto gasta. | A orientação 18 passou a dizer o valor de uma carga completa (cerca de R$ 0,59 na bike e R$ 0,21 no patinete) e que perto de 15% da energia vira calor no carregador. Foi criada a orientação 23, com o resultado da comparação tomada × Tarifa Branca × solar, e a 24, sobre descarte da bateria. | `data/base_conhecimento.json` do assistente, orientações 18, 23 e 24 |
 
+## Segunda rodada: 19/11/2026
+
+**Quando e como:** presencial, com 2 pessoas de fora da equipe, numa cópia do assistente com histórico vazio (para não misturar com os 11 atendimentos do teste de Python). As duas usaram a mesma sessão. A equipe mostrou 6 situações ("quero saber quanto pesa na conta carregar o patinete", "a bateria da bike morreu" etc.) e as pessoas digitaram as frases como foram mostradas: as perguntas são sugeridas pela equipe, não livres. Notas de facilidade: 5 (registrada pelo assistente ao sair) e 4 (dada de viva voz pela segunda pessoa). Nenhum comentário além das notas foi registrado.
+
+| Pergunta digitada (exata) | Antes do ajuste | Ajudou? | Depois do ajuste |
+| --- | --- | --- | --- |
+| Quero saber quanto pesa na conta de luz carregar o patinete todo dia. | 18, ALTA (6 pontos) | sim | sem mudança |
+| Estou pensando em pôr placa solar só para carregar a bike. Compensa? | 20 (créditos solares), ALTA (7); a 23 só como alternativa | sim | 23, ALTA (10 pontos) |
+| A bateria da bike morreu. O que eu faço com ela? | não encontrou | não | 24, MÉDIA (5 pontos) |
+| Ouvi falar de Tarifa Branca. Vale a pena para carregar a bike de noite? | **17, Rede Noturno de ônibus**, ALTA (6): resposta errada, marcada como "ajudou" | sim | 23, ALTA (11 pontos) |
+| A conta de luz ficou mais cara este mês por causa da bandeira. Isso muda o custo da recarga? | 19, MÉDIA (5 pontos) | sim | sem mudança |
+| Tenho placa solar em casa. Como funcionam os créditos na conta? | 20, ALTA (10 pontos) | sim | sem mudança |
+
+**Ajustes feitos a partir desta rodada** (palavras-chave em `data/base_conhecimento.json` do assistente e em `integracao/orientacoes_novas.json`):
+
+- Orientação 23: "so para carregar", "so pra carregar", "placa solar so", "vale a pena para carregar", "carregar a bike de noite" e "carregar o patinete de noite". A palavra "noite" puxava a Rede Noturno de ônibus; agora a pergunta sobre Tarifa Branca cai na análise.
+- Orientação 24: "bateria morreu", "bateria da bike morreu", "bateria do patinete morreu" e "bateria da bicicleta morreu".
+- As pontuações das perguntas usadas nos vídeos de Python e de SERS não mudaram, e os testes automatizados dos dois repositórios passam.
+
+**O que esta rodada mostra:** a pessoa marcou "ajudou" numa resposta errada (Rede Noturno). A pergunta "ajudou?" sozinha não garante acerto; por isso a equipe conferiu cada resposta.
+
 ## Limitações do teste
 
 - Só 2 perguntas de energia, de 2 das 3 pessoas.
 - As perguntas foram sugeridas pela equipe.
-- As orientações 23 (resultado desta análise) e 24 (descarte) foram criadas depois do teste e ainda não foram testadas com usuários.
+- As orientações 23 (resultado desta análise) e 24 (descarte) foram criadas depois da primeira rodada e testadas na segunda (19/11/2026), com perguntas sugeridas pela equipe.
 
 ## Medição da busca (antes e depois do teste)
 

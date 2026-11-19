@@ -25,7 +25,13 @@
       "co2",
       "emissao",
       "carbono",
-      "gasto por ano carregando"
+      "gasto por ano carregando",
+      "so para carregar",
+      "so pra carregar",
+      "placa solar so",
+      "vale a pena para carregar",
+      "carregar a bike de noite",
+      "carregar o patinete de noite"
     ],
     "resposta": "Pela análise da equipe, rodando 6 km por dia, carregar na tomada custa perto de R$ 12 por ano na bike e R$ 13 no patinete (uma carga completa: R$ 0,59 e R$ 0,21) e emite cerca de 0,7 kg de CO2 por ano, pelo fator da rede de 2025 do MCTI. A Tarifa Branca economiza menos de R$ 2 por ano e vale para a casa toda. A energia solar não emite na operação, mas só compensa como parte de um sistema da casa: a parte da bike custa uns R$ 28 e se paga em 2,4 a 5 anos (até 7 nos cenários mais caros), porque a cobrança do Fio B sobe até 2028 (Lei 14.300). Referências: tarifa da Enel, irradiação do SunData/CEPEL, emissões do MCTI e Lei 14.300; o preço do painel é dado de mercado. São estimativas, não valores garantidos: dependem dos impostos, da bandeira do mês e do seu uso.",
     "documentos": [],
@@ -53,7 +59,11 @@
       "levo a bateria",
       "patinete estragou",
       "bike estragou",
-      "bicicleta estragou"
+      "bicicleta estragou",
+      "bateria morreu",
+      "bateria da bike morreu",
+      "bateria do patinete morreu",
+      "bateria da bicicleta morreu"
     ],
     "resposta": "Pela Política Nacional de Resíduos Sólidos, fabricantes, importadores, distribuidores e comerciantes de pilhas e baterias são obrigados a ter sistema de logística reversa, com retorno do produto depois do uso. O consumidor deve devolver a bateria usada aos comerciantes ou distribuidores.",
     "documentos": [],

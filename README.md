@@ -171,7 +171,7 @@ No patinete os números são parecidos: R$ 13,00 por ano na tomada, R$ 11,02 na 
 
 ## Testes com usuários
 
-O teste foi feito em 18/11/2026, presencial, com 3 pessoas de fora da equipe usando o assistente. Duas perguntas de energia foram feitas e as duas foram encontradas e ajudaram. A partir delas, a orientação 18 passou a mostrar o valor por carga, e não só a tarifa. Situações, comentários, ajustes e limitações do teste em [`docs/testes-com-usuarios.md`](docs/testes-com-usuarios.md).
+O teste foi feito em 18/11/2026, presencial, com 3 pessoas de fora da equipe usando o assistente. Duas perguntas de energia foram feitas e as duas foram encontradas e ajudaram. A partir delas, a orientação 18 passou a mostrar o valor por carga, e não só a tarifa. Numa segunda rodada (19/11/2026, 2 pessoas, 6 perguntas de energia), 3 perguntas falharam: a da Tarifa Branca caía na Rede Noturno de ônibus, a da placa solar "só para a bike" não chegava à análise e a da bateria que "morreu" não achava o descarte. Novas palavras-chave nas orientações 23 e 24 corrigiram as três. Situações, comentários, ajustes e limitações do teste em [`docs/testes-com-usuarios.md`](docs/testes-com-usuarios.md).
 
 ## Referências
 
